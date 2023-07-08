@@ -10,13 +10,10 @@ A node utility function that implements timeout and `AbortSignal` support for as
 ```ts
 import { withTimeout } from '@cameronhunter/async-with-timeout';
 
-await withTimeout(
-    async () => {
-        const a: number = await longProcess();
-        const b: number = await anotherLongProcess();
+await withTimeout(5000, async () => {
+    const a: number = await longProcess();
+    const b: number = await anotherLongProcess();
 
-        return a + b;
-    },
-    { timeout: 5000 }
-);
+    return a + b;
+});
 ```
