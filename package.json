@@ -9,10 +9,11 @@
     "build": "tsc -p ./tsconfig.build.json",
     "start": "ts-node $@",
     "test": "vitest",
-    "release": "yarn build && yarn version $@ && git commit -a && yarn npm publish"
+    "release": "yarn build && yarn version --immediate \"$@\" && yarn npm publish"
   },
   "devDependencies": {
-    "@tsconfig/node-lts-strictest": "^18.12.1",
+    "@tsconfig/node-lts": "^18.12.3",
+    "@tsconfig/strictest": "^2.0.1",
     "@types/node": "~18",
     "typescript": "^5.1.6",
     "vitest": "^0.33.0"
