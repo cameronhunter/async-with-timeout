@@ -1,6 +1,6 @@
 {
-  "private": true,
-  "name": "@cameronhunter/with-timeout",
+  "name": "@cameronhunter/async-with-timeout",
+  "description": "A node utility function that implements timeout and AbortSignal support for async functions.",
   "version": "0.0.0",
   "license": "MIT",
   "main": "./build/withTimeout.js",
@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "start": "ts-node $@",
-    "test": "vitest"
+    "test": "vitest",
+    "release": "yarn build && yarn version $@ && git commit -a && yarn npm publish"
   },
   "devDependencies": {
     "@tsconfig/node-lts-strictest": "^18.12.1",
@@ -17,6 +18,15 @@
     "vitest": "^0.33.0"
   },
   "engines": {
-    "node": ">=16.14.0"
+    "node": ">=16"
+  },
+  "keywords": [
+    "node",
+    "promise",
+    "async",
+    "AbortSignal"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }

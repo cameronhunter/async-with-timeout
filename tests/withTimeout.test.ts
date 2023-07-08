@@ -4,9 +4,8 @@ import { setTimeout } from 'node:timers/promises';
 
 test('Action completes', async () => {
     const promise = withTimeout(
-        async () => {
-            await setTimeout(10);
-            return 'hello world';
+        (signal) => {
+            return setTimeout(10, 'hello world', { signal });
         },
         { timeout: 25 }
     );
@@ -14,11 +13,10 @@ test('Action completes', async () => {
     await expect(promise).resolves.toBe('hello world');
 });
 
-test('Action times out', async () => {
+test('Action is aborted', async () => {
     const promise = withTimeout(
-        async () => {
-            await setTimeout(100);
-            return 'hello world';
+        async (signal) => {
+            return setTimeout(100, 'hello world', { signal });
         },
         { timeout: 10 }
     );
@@ -28,19 +26,7 @@ test('Action times out', async () => {
     );
 });
 
-test('Action is cancelled', async () => {
-    const promise = withTimeout(
-        async () => {
-            await setTimeout(100);
-            return 'hello world';
-        },
-        { timeout: 1000, signal: AbortSignal.timeout(10) }
-    );
-
-    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot('"The operation was aborted"');
-});
-
-test('Action accepts a signal', async () => {
+test('Action accepts a signal parameter', async () => {
     const spy = vi.fn();
 
     const promise = withTimeout(
@@ -65,6 +51,32 @@ test('Action accepts a signal', async () => {
         [AbortError: The operation was aborted],
       ]
     `);
+});
+
+test('Name option is used in abort message', async () => {
+    const promise = withTimeout(
+        async (signal) => {
+            return setTimeout(100, 'hello world', { signal });
+        },
+        { name: 'Hello world', timeout: 10 }
+    );
+
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
+        '"Hello world was aborted due to timeout after 10ms"'
+    );
+});
+
+test('Named action is aborted', async () => {
+    const promise = withTimeout(
+        async function helloWorld() {
+            return setTimeout(100, 'hello world');
+        },
+        { timeout: 10 }
+    );
+
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
+        '"helloWorld was aborted due to timeout after 10ms"'
+    );
 });
 
 describe('Invalid inputs', () => {

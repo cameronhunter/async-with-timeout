@@ -16,7 +16,7 @@ export async function withTimeout<R>(
         `Value for "timeout" was invalid. It must be >= 0 && <= ${2 ** 32 - 1}. Received: ${options.timeout}`
     );
 
-    const name = options?.name || 'The operation';
+    const name = options?.name || action.name || 'The operation';
 
     if (options.signal?.aborted) {
         throw new Error(`${name} was aborted`, { cause: options.signal.reason });
