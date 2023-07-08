@@ -5,6 +5,9 @@
   "license": "MIT",
   "main": "./build/withTimeout.js",
   "types": "./build/withTimeout.d.ts",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "start": "ts-node $@",
