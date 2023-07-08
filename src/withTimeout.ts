@@ -1,4 +1,5 @@
 import { once } from 'node:events';
+import { setTimeout } from 'node:timers/promises';
 
 export async function withTimeout<R>(
     action: (signal: AbortSignal) => Promise<R>,
@@ -11,15 +12,10 @@ export async function withTimeout<R>(
     }
 
     const controller = new AbortController();
-    const timeoutSignal = AbortSignal.timeout(options.timeout);
 
     const promises = [
-        once(timeoutSignal, 'abort', controller).then(() =>
-            Promise.reject(
-                new Error(`${name} was aborted due to timeout after ${options.timeout}ms`, {
-                    cause: timeoutSignal.reason,
-                })
-            )
+        setTimeout(options.timeout, undefined, controller).then(() =>
+            Promise.reject(new Error(`${name} was aborted due to timeout after ${options.timeout}ms`))
         ),
         action(controller.signal),
     ];
