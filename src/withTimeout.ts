@@ -2,33 +2,39 @@ import { once } from 'node:events';
 
 export async function withTimeout<R>(
     action: (signal: AbortSignal) => Promise<R>,
-    options: { timeout: number; signal?: AbortSignal }
-) {
-    return new Promise<R>((resolve, reject) => {
-        const controller = new AbortController();
+    options: { timeout: number; signal?: AbortSignal; name?: string }
+): Promise<R> {
+    const name = options?.name || 'The operation';
 
-        function cleanup() {
-            if (!controller.signal.aborted) {
-                controller.abort();
-            }
-        }
+    if (options.signal?.aborted) {
+        throw new Error(`${name} was aborted`, { cause: options.signal.reason });
+    }
 
-        if (options?.signal) {
-            once(options.signal, 'abort', controller)
-                .then(() => reject(new Error('Action aborted by external signal.')))
-                .catch(() => {
-                    // Signal abort listener was removed by the abort controller.
+    const controller = new AbortController();
+    const timeoutSignal = AbortSignal.timeout(options.timeout);
+
+    const promises = [
+        once(timeoutSignal, 'abort', controller).then(() =>
+            Promise.reject(
+                new Error(`${name} was aborted due to timeout after ${options.timeout}ms`, {
+                    cause: timeoutSignal.reason,
                 })
-                .finally(cleanup);
+            )
+        ),
+        action(controller.signal),
+    ];
+
+    if (options?.signal) {
+        promises.push(
+            once(options.signal, 'abort', controller).then(() =>
+                Promise.reject(new Error(`${name} was aborted`, { cause: options.signal?.reason }))
+            )
+        );
+    }
+
+    return Promise.race(promises).finally(() => {
+        if (!controller.signal.aborted) {
+            controller.abort();
         }
-
-        once(AbortSignal.timeout(options.timeout), 'abort', controller)
-            .then(() => reject(new Error(`Timeout after ${options.timeout}.`)))
-            .catch(() => {
-                // Timer was stopped by the abort controller.
-            })
-            .finally(cleanup);
-
-        action(controller.signal).then(resolve).catch(reject).finally(cleanup);
     });
 }
