@@ -1,5 +1,11 @@
 # @cameronhunter/async-with-timeout
 
+## 3.1.0
+
+### Minor Changes
+
+-   524496e: Support undefined or zero timeouts for short-circuit
+
 ## 3.0.1
 
 ### Patch Changes
