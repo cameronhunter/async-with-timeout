@@ -10,9 +10,8 @@
   ],
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
-    "start": "ts-node $@",
     "test": "vitest",
-    "release": "yarn build && yarn version --immediate \"$@\" && yarn npm publish"
+    "release": "pnpm build && changeset && changeset version && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
