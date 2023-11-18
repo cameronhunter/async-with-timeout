@@ -9,11 +9,17 @@ export type Options = {
 };
 
 export async function withTimeout<R>(
-    timeout: number,
-    action: (signal: AbortSignal) => Promise<R>,
+    timeout: number | undefined,
+    action: (signal?: AbortSignal) => Promise<R>,
     options?: Options
 ): Promise<R> {
     options?.signal?.throwIfAborted();
+
+    const controller = new AbortController();
+
+    if (!timeout) {
+        return action(options?.signal);
+    }
 
     assert(
         Number.isSafeInteger(timeout) && Number.isFinite(timeout),
@@ -24,8 +30,6 @@ export async function withTimeout<R>(
         timeout >= 0 && timeout < 2 ** 32,
         `Value for "timeout" was invalid. It must be >= 0 && <= ${2 ** 32 - 1}. Received: ${timeout}`
     );
-
-    const controller = new AbortController();
 
     const promises = [
         setTimeout(timeout, undefined, controller).then(() => {
