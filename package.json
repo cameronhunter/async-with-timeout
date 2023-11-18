@@ -15,6 +15,7 @@
     "release": "yarn build && yarn version --immediate \"$@\" && yarn npm publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.26.2",
     "@tsconfig/node-lts": "^18.12.3",
     "@tsconfig/strictest": "^2.0.1",
     "@types/node": "~18",
