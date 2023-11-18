@@ -15,9 +15,7 @@ test('Action is aborted', async () => {
         return setTimeout(100, 'hello world', { signal });
     });
 
-    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-        '"The operation was aborted due to timeout after 10ms"'
-    );
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot('"Timeout after 10ms"');
 });
 
 test('Action accepts a signal parameter', async () => {
@@ -33,9 +31,7 @@ test('Action accepts a signal parameter', async () => {
         return 'hello world';
     });
 
-    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-        '"The operation was aborted due to timeout after 10ms"'
-    );
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot('"Timeout after 10ms"');
 
     expect(spy.mock.lastCall).toMatchInlineSnapshot(`
       [
@@ -44,28 +40,30 @@ test('Action accepts a signal parameter', async () => {
     `);
 });
 
-test('Name option is used in abort message', async () => {
+test('action with a custom error times out', async () => {
     const promise = withTimeout(
         10,
         async (signal) => {
             return setTimeout(100, 'hello world', { signal });
         },
-        { name: 'Hello world' }
+        { rejectionError: new Error('Hello world failed.') }
     );
 
-    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-        '"Hello world was aborted due to timeout after 10ms"'
-    );
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot('"Hello world failed."');
+    await expect(promise).rejects.toHaveProperty('cause.message', 'Timeout after 10ms');
 });
 
-test('Named action is aborted', async () => {
-    const promise = withTimeout(10, async function helloWorld() {
-        return setTimeout(100, 'hello world');
-    });
-
-    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-        '"helloWorld was aborted due to timeout after 10ms"'
+test('action with a custom error is aborted', async () => {
+    const promise = withTimeout(
+        10,
+        async function helloWorld() {
+            return setTimeout(100, 'hello world');
+        },
+        { signal: AbortSignal.timeout(5), rejectionError: new Error('Hello world failed.') }
     );
+
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot('"Hello world failed."');
+    await expect(promise).rejects.toHaveProperty('cause.message', 'Aborted by signal');
 });
 
 describe('Invalid inputs', () => {
