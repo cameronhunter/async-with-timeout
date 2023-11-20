@@ -1,5 +1,11 @@
 # @cameronhunter/async-with-timeout
 
+## 3.1.1
+
+### Patch Changes
+
+-   c889f0e: fix(deps): bump @cameronhunter/clone-error from 1.0.2 to 1.0.3
+
 ## 3.1.0
 
 ### Minor Changes

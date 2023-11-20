@@ -1,7 +1,7 @@
 {
   "name": "@cameronhunter/async-with-timeout",
   "description": "A node utility function that implements timeout and AbortSignal support for async functions.",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "license": "MIT",
   "main": "./build/withTimeout.js",
   "types": "./build/withTimeout.d.ts",
