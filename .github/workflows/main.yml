@@ -60,7 +60,7 @@ jobs:
               with:
                   title: Release package
                   publish: pnpm run release
-                  createGithubReleases: true
+                  createGithubReleases: false
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
