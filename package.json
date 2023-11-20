@@ -41,6 +41,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@cameronhunter/clone-error": "^1.0.2"
+    "@cameronhunter/clone-error": "^1.0.3"
   }
 }
